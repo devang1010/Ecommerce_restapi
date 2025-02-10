@@ -36,7 +36,7 @@
     }
 
     // Update User
-    if($method == "PUT"){
+    elseif($method == "PUT"){
         $data = json_decode(file_get_contents("php://input"), true);
 
         if(empty($data["id"]) || empty($data["username"]) || empty($data["email"])){
@@ -62,5 +62,22 @@
     }
 
     // DELETE User
-    
+    elseif($method == "DELETE"){
+        $data = json_decode(file_get_contents("php://input"), true);
+        
+        if(empty($data["id"])){
+            echo json_encode(["status" => "error", "message" => "Enter Id"]);
+        }
+
+        $id = trim(intval($data["id"]));
+        $sql = "DELETE FROM users WHERE id = ?";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        
+        if (mysqli_stmt_execute($stmt)) {
+            echo json_encode(["status" => "ok", "message" => "User deleted successfully"]);
+        } else {
+            echo json_encode(["status" => "error", "message" => "Error deleting user"]);
+        }
+    }
 ?>
